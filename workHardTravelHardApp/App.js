@@ -19,19 +19,37 @@ export default function App() {
   const [text, setText] = useState(false);
   const [toDos, setToDos] = useState({});
 
-  const travel = () => setWorking(false);
-  const work = () => setWorking(true);
+  const travel = () => {
+    setWorking(false);
+    saveWorking(false);
+  };
+
+  const work = () => {
+    setWorking(true);
+    saveWorking(true);
+  };
+
   const onChangeText = (payload) => setText(payload);
 
   const STORAGE_KEY = "@toDos";
+  const STORAGE_WORKING_KEY = "@isWorking";
 
   const saveToDos = async (toSave) => {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
   };
 
+  const saveWorking = async (working) => {
+    await AsyncStorage.setItem(STORAGE_WORKING_KEY, JSON.stringify(working));
+  };
+
   const loadToDos = async () => {
     const stringToDos = await AsyncStorage.getItem(STORAGE_KEY);
     setToDos(JSON.parse(stringToDos));
+  };
+
+  const loadWorking = async () => {
+    const stringWorking = await AsyncStorage.getItem(STORAGE_WORKING_KEY);
+    setWorking(JSON.parse(stringWorking));
   };
 
   const deleteToDo = (key) => {
@@ -52,6 +70,7 @@ export default function App() {
 
   useState(() => {
     loadToDos();
+    loadWorking();
   }, []);
 
   const addToDo = async () => {
@@ -62,7 +81,7 @@ export default function App() {
     await saveToDos(newToDos);
     setText("");
   };
-  console.log(Object.keys(toDos));
+
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
